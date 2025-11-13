@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catering Menu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fce4ec 0%, #f3e5f5 50%, #e3f2fd 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 40px;
+            border-top: 6px solid #f48fb1;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            background: linear-gradient(135deg, #f48fb1, #ce93d8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        .header .subtitle {
+            font-size: 1.3em;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .reservation-badge {
+            background: linear-gradient(135deg, #fce4ec, #f3e5f5);
+            display: inline-block;
+            padding: 15px 30px;
+            border-radius: 50px;
+            margin-top: 10px;
+        }
+
+        .reservation-badge p:first-child {
+            color: #d81b60;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .reservation-badge p:last-child {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .section-title h2 {
+            font-size: 2em;
+            color: #333;
+        }
+
+        .icon {
+            width: 40px;
+            height: 40px;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .menu-item {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .menu-item:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-color: #f48fb1;
+            transform: translateY(-2px);
+        }
+
+        .menu-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+        }
+
+        .menu-item h3 {
+            font-size: 1.2em;
+            color: #333;
+            flex: 1;
+        }
+
+        .menu-item .price {
+            color: #f48fb1;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-left: 15px;
+        }
+
+        .menu-item .serves {
+            color: #999;
+            font-size: 0.85em;
+            margin-top: 8px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #fce4ec, #f3e5f5);
+            padding: 30px;
+            border-bottom: 3px solid #f48fb1;
+            position: sticky;
+            top: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .modal-header h2 {
+            font-size: 2em;
+            color: #333;
+        }
+
+        .modal-header .price {
+            font-size: 1.8em;
+            color: #d81b60;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .modal-header .serves {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .close-btn {
+            background: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.5em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+
+        .close-btn:hover {
+            background: #fce4ec;
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .image-placeholder {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, #fce4ec, #f3e5f5);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+            border: 3px dashed #f48fb1;
+        }
+
+        .image-placeholder svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 10px;
+            opacity: 0.5;
+        }
+
+        .image-placeholder p {
+            color: #999;
+        }
+
+        .detail-section {
+            margin-bottom: 20px;
+        }
+
+        .detail-section h3 {
+            font-size: 1.3em;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .detail-section .content {
+            padding: 20px;
+            border-radius: 10px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .description-content {
+            background: #fce4ec;
+        }
+
+        .ingredients-content {
+            background: #f3e5f5;
+            font-style: italic;
+        }
+
+        .dietary-content {
+            background: #e3f2fd;
+            font-style: italic;
+        }
+
+        .pdf-instructions {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-top: 40px;
+        }
+
+        .pdf-instructions strong {
+            color: #d81b60;
+        }
+
+        @media print {
+            .modal {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Catering Menu</h1>
+            <p class="subtitle">For Your Special Events</p>
+            <div class="reservation-badge">
+                <p>OPEN FOR RESERVATION</p>
+                <p>Order must be placed 2 weeks ahead</p>
+            </div>
+        </div>
+
+        <!-- Finger Food Section -->
+        <div class="section">
+            <div class="section-title">
+                <svg class="icon" fill="#f48fb1" viewBox="0 0 24 24">
+                    <path d="M8.1 13.34l2.83-2.83L3.91 3.5c-1.56 1.56-1.56 4.09 0 5.66l4.19 4.18zm6.78-1.81c1.53.71 3.68.21 5.27-1.38 1.91-1.91 2.28-4.65.81-6.12-1.46-1.46-4.2-1.1-6.12.81-1.59 1.59-2.09 3.74-1.38 5.27L3.7 19.87l1.41 1.41L12 14.41l6.88 6.88 1.41-1.41L13.41 13l1.47-1.47z"/>
+                </svg>
+                <h2>Finger Food</h2>
+            </div>
+            <div class="menu-grid" id="fingerFood"></div>
+        </div>
+
+        <!-- Mini Cups Section -->
+        <div class="section">
+            <div class="section-title">
+                <svg class="icon" fill="#ce93d8" viewBox="0 0 24 24">
+                    <path d="M20 3H4v10c0 2.21 1.79 4 4 4h6c2.21 0 4-1.79 4-4v-3h2c1.11 0 2-.9 2-2V5c0-1.11-.89-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4z"/>
+                </svg>
+                <h2>Mini Cups</h2>
+            </div>
+            <div class="menu-grid" id="miniCups"></div>
+        </div>
+
+        <!-- Mains Section -->
+        <div class="section">
+            <div class="section-title">
+                <svg class="icon" fill="#d81b60" viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                </svg>
+                <h2>Mains</h2>
+            </div>
+            <p style="color: #666; margin-bottom: 20px; font-style: italic;">Serves 12-15 persons</p>
+            <div class="menu-grid" id="mains"></div>
+        </div>
+
+        <!-- Desserts Section -->
+        <div class="section">
+            <div class="section-title">
+                <svg class="icon" fill="#ba68c8" viewBox="0 0 24 24">
+                    <path d="M12 6c1.11 0 2-.9 2-2 0-.38-.1-.73-.29-1.03L12 0l-1.71 2.97c-.19.3-.29.65-.29 1.03 0 1.1.9 2 2 2zm4.6 9.99l-1.07-1.07-1.08 1.07c-1.3 1.3-3.58 1.31-4.89 0l-1.07-1.07-1.09 1.07C6.75 16.64 5.88 17 4.96 17c-.73 0-1.4-.23-1.96-.61V21c0 .55.45 1 1 1h16c.55 0 1-.45 1-1v-4.61c-.56.38-1.23.61-1.96.61-.92 0-1.79-.36-2.44-1.01zM18 9h-5V7h-2v2H6c-1.66 0-3 1.34-3 3v1.54c0 1.08.88 1.96 1.96 1.96.52 0 1.02-.2 1.38-.57l2.14-2.13 2.13 2.13c.74.74 2.03.74 2.77 0l2.14-2.13 2.13 2.13c.37.37.86.57 1.38.57 1.08 0 1.96-.88 1.96-1.96V12C21 10.34 19.66 9 18 9z"/>
+                </svg>
+                <h2>Dessert Bites</h2>
+            </div>
+            <div class="menu-grid" id="desserts"></div>
+        </div>
+
+        <!-- PDF Instructions -->
+        <div class="pdf-instructions">
+            <p><strong>To save as PDF:</strong> Press Ctrl+P (Windows) or Cmd+P (Mac), then select "Save as PDF"</p>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h2 id="modalTitle"></h2>
+                    <div class="price" id="modalPrice"></div>
+                    <div class="serves" id="modalServes"></div>
+                </div>
+                <button class="close-btn" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="image-placeholder">
+                    <svg fill="#f48fb1" viewBox="0 0 24 24">
+                        <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
+                    </svg>
+                    <p>Image placeholder</p>
+                </div>
+
+                <div class="detail-section">
+                    <h3>Description</h3>
+                    <div class="content description-content" id="modalDescription"></div>
+                </div>
+
+                <div class="detail-section">
+                    <h3>Ingredients</h3>
+                    <div class="content ingredients-content">Add ingredients here</div>
+                </div>
+
+                <div class="detail-section">
+                    <h3>Dietary Information</h3>
+                    <div class="content dietary-content">Add dietary info here</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const menuData = {
+            fingerFood: [
+                { name: 'Fajitas', price: '24€', description: 'Add your description here' },
+                { name: 'Mini Pizza', price: '15€', description: 'Add your description here' },
+                { name: 'Crispy Bites', price: '22€', description: 'Add your description here' },
+                { name: 'Beef Burger', price: '24€', description: 'Add your description here' },
+                { name: 'Lahem Baajin', price: '18€', description: 'Add your description here' },
+                { name: 'Fatayer Sabenikh', price: '18€', description: 'Add your description here' },
+                { name: 'Beef Samboussek', price: '15€', description: 'Add your description here' },
+                { name: 'Cheese Sammboussek', price: '14€', description: 'Add your description here' },
+                { name: 'Honey Chicken Burger', price: '24€', description: 'Add your description here' }
+            ],
+            miniCups: [
+                { name: 'Fatteh', price: '15€', description: 'Add your description here' },
+                { name: 'Hommus', price: '10€', description: 'Add your description here' },
+                { name: 'Fattoush', price: '15€', description: 'Add your description here' },
+                { name: 'Tabbouleh', price: '15€', description: 'Add your description here' },
+                { name: 'Tuna Salad', price: '15€', description: 'Add your description here' },
+                { name: 'Caesar Salad', price: '15€', description: 'Add your description here' },
+                { name: 'Baba Ganoug', price: '10€', description: 'Add your description here' },
+                { name: 'Waraa Einab', price: '15€', description: 'Add your description here' },
+                { name: 'Kafta with Hummus', price: '18€', description: 'Add your description here' }
+            ],
+            mains: [
+                { name: 'Beef Mansaf', price: '50€', description: 'Add your description here', serves: '12-15 person' },
+                { name: 'Beef Kabseh', price: '50€', description: 'Add your description here', serves: '12-15 person' },
+                { name: 'Beef Shawrma', price: '40€', description: 'Add your description here', serves: '12-15 person' },
+                { name: 'Chicken Mansaf', price: '45€', description: 'Add your description here', serves: '12-15 person' },
+                { name: 'Chicken Kabseh', price: '45€', description: 'Add your description here', serves: '12-15 person' },
+                { name: 'Chicken Shawrma', price: '35€', description: 'Add your description here', serves: '12-15 person' }
+            ],
+            desserts: [
+                { name: 'Tiramisu', price: '22€', description: 'Add your description here' },
+                { name: 'Brownies', price: '20€', description: 'Add your description here' },
+                { name: 'Cheesecake', price: '28€', description: 'Lotus, Strawberry, Blueberry' },
+                { name: 'Pancake Bites', price: '20€', description: 'Add your description here' },
+                { name: 'Fraisier Cake Cups', price: '24€', description: 'Add your description here' },
+                { name: 'Chocolate Cake Cups', price: '24€', description: 'Add your description here' },
+                { name: 'Chocopops Cake Cups', price: '24€', description: 'Add your description here' },
+                { name: 'Chocolate Dubai Tiramisu', price: '30€', description: 'Add your description here' }
+            ]
+        };
+
+        function renderMenu() {
+            Object.keys(menuData).forEach(category => {
+                const container = document.getElementById(category);
+                menuData[category].forEach(item => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'menu-item';
+                    itemDiv.onclick = () => openModal(item);
+                    
+                    itemDiv.innerHTML = `
+                        <div class="menu-item-header">
+                            <h3>${item.name}</h3>
+                            <span class="price">${item.price}</span>
+                        </div>
+                        ${item.serves ? `<div class="serves">Serves ${item.serves}</div>` : ''}
+                    `;
+                    
+                    container.appendChild(itemDiv);
+                });
+            });
+        }
+
+        function openModal(item) {
+            document.getElementById('modalTitle').textContent = item.name;
+            document.getElementById('modalPrice').textContent = item.price;
+            document.getElementById('modalServes').textContent = item.serves ? `Serves ${item.serves}` : '';
+            document.getElementById('modalDescription').textContent = item.description;
+            document.getElementById('modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Initialize menu
+        renderMenu();
+    </script>
+</body>
+</html>
